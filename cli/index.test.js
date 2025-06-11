@@ -66,12 +66,12 @@ describe('CLI integration', () => {
     fs.writeFileSync(path.join(dummyModuleDir, 'file.txt'), 'integration');
   });
 
-  // afterAll(() => {
-  //   fs.removeSync(tempDir);
-  //   // Optionally clean up the dummy module
-  //   const modulesDir = path.join(__dirname, '..', 'modules');
-  //   fs.removeSync(path.join(modulesDir, 'auth-oauth'));
-  // });
+  afterAll(() => {
+    fs.removeSync(tempDir);
+    // Optionally clean up the dummy module
+    const modulesDir = path.join(__dirname, '..', 'modules');
+    fs.removeSync(path.join(modulesDir, 'auth-oauth'));
+  });
 
   it('should scaffold a project and include a module', () => {
     const framework = 'react';
