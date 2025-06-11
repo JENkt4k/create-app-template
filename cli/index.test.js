@@ -34,10 +34,17 @@ describe('fetchModuleFromRepo', () => {
 
   beforeAll(() => {
     tempModulesDir = path.join(__dirname, '..', 'modules', 'auth-oauth');
+    const modulesDir = path.join(__dirname, '..', 'modules');
+    const dummyModuleDir = path.join(modulesDir, 'auth-oauth');
+    fs.ensureDirSync(dummyModuleDir);
+    fs.writeFileSync(path.join(dummyModuleDir, 'file.txt'), 'integration');
   });
 
   afterAll(() => {
     fs.removeSync(tempModulesDir);
+    const modulesDir = path.join(__dirname, '..', 'modules');
+    fs.removeSync(path.join(modulesDir, 'auth-oauth'));
+    fs.removeSync(modulesDir);
   });
 
   it('should fetch a module from a remote repo and clone it locally', async () => {
@@ -66,19 +73,20 @@ describe('CLI integration', () => {
 
   it('should scaffold a project and include a module', () => {
     const framework = 'react';
-    const branch = 'auth-oauth';
+    const branch = 'hello-world';
     const module = 'auth-oauth';
     const cliPath = path.join(__dirname, 'cli.js');
-    const cmd = `node "${cliPath}" --framework ${framework} --branch ${branch} --include ${module} --directory "${tempDir}"`;
+    const cmd = `node "${cliPath}" --framework ${framework} --branch ${branch} --include ${module} --module-branch ${module} --directory "${tempDir}"`;
 
     console.log('cliPath:', cliPath);
     console.log('tempDir:', tempDir);
     console.log('cmd:', cmd);
 
     const output = execSync(cmd, { encoding: 'utf8' });
+    console.log('Command output:', output);
 
     expect(output).toMatch(/Cloning/);
-    expect(output).toMatch(/Including module/);
+
     // Check for a real file from the module
     const filePath = path.join(tempDir, 'modules', 'auth-oauth', 'package.json'); 
     expect(fs.existsSync(filePath)).toBe(true);

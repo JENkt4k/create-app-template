@@ -32,12 +32,14 @@ async function fetchModuleFromRepo(repo, moduleName, branch, localModulesDir) {
 }
 
 async function main(options) {
+  debugger;
   const fw = templates[options.framework];
   if (!fw) {
     console.error("Unknown framework: " + options.framework);
     process.exit(1);
   }
 
+  // Base repo for template
   const repo = fw.repo + (options.branch ? "#" + options.branch : "");
   const emitter = degit(repo, { cache: false, force: true });
   const outDir = path.resolve(process.cwd(), options.directory);
@@ -45,20 +47,21 @@ async function main(options) {
   console.log(`📦 Cloning ${repo} into ${outDir}`);
   await emitter.clone(outDir);
 
-  const localModulesDir = path.join(__dirname, "..", "modules");
-
   if (options.include) {
     const modules = options.include.split(",");
-    // Optionally fetch modules from a remote repo before copying
-    const moduleRepo = options.moduleRepo || fw.moduleRepo || "user/repo";
-    const moduleBranch = options.moduleBranch || options.branch || "main";
+    // Use either specified module repo or fall back to template repo
+    const moduleRepo = options.moduleRepo || fw.repo;
+    
     for (const mod of modules) {
-      const localPath = path.join(localModulesDir, mod.trim());
-      if (!fs.existsSync(localPath)) {
-        await fetchModuleFromRepo(moduleRepo, mod.trim(), moduleBranch, localModulesDir);
-      }
+      const destPath = path.join(outDir, 'modules', mod.trim());
+      // Fetch module directly to destination/modules subdirectory
+      await fetchModuleFromRepo(
+        moduleRepo,
+        mod.trim(), 
+        options.moduleBranch || mod.trim(),  // Use specified branch or module name as branch
+        path.join(outDir, 'modules')
+      );
     }
-    await copyModules(modules, outDir);
   }
 
   if (fs.existsSync(path.join(outDir, "package.json"))) {
