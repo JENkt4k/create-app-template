@@ -7,19 +7,6 @@ const path = require("path");
 const fs = require("fs-extra");
 const templates = require("../templates.json");
 
-const program = new Command();
-
-program
-  .name("create-app-template")
-  .description("Scaffold a framework template with evolution")
-  .requiredOption("-f, --framework <name>", "Framework to use")
-  .option("-b, --branch <branch>", "Template evolution branch to use")
-  .option("-i, --include <modules>", "Comma-separated modules to merge")
-  .option("-d, --directory <dir>", "Target directory", ".");
-
-program.parse(process.argv);
-const options = program.opts();
-
 async function copyModules(modules, targetDir) {
   const moduleDir = path.join(__dirname, "..", "modules");
   
@@ -47,7 +34,7 @@ async function fetchModuleFromRepo(repo, moduleName, branch, localModulesDir) {
   await degit(repoSpec, { cache: false, force: true }).clone(dest);
 }
 
-async function main() {
+async function main(options) {
   const fw = templates[options.framework];
   if (!fw) {
     console.error("Unknown framework: " + options.framework);
@@ -66,9 +53,13 @@ async function main() {
   if (options.include) {
     const modules = options.include.split(",");
     // Optionally fetch modules from a remote repo before copying
+    const moduleRepo = options.moduleRepo || fw.moduleRepo || "user/repo";
+    const moduleBranch = options.moduleBranch || options.branch || "main";
     for (const mod of modules) {
-      // Uncomment and set your repo/branch if you want to always fetch latest:
-      await fetchModuleFromRepo("user/repo", mod.trim(), "auth-oauth", localModulesDir);
+      const localPath = path.join(localModulesDir, mod.trim());
+      if (!fs.existsSync(localPath)) {
+        await fetchModuleFromRepo(moduleRepo, mod.trim(), moduleBranch, localModulesDir);
+      }
     }
     await copyModules(modules, outDir);
   }
@@ -81,7 +72,30 @@ async function main() {
   console.log("✅ Done!");
 }
 
-main().catch(err => {
-  console.error("Error:", err);
-  process.exit(1);
-});
+if (require.main === module) {
+  const program = new Command();
+
+  program
+    .name("create-app-template")
+    .description("Scaffold a framework template with evolution")
+    .requiredOption("-f, --framework <name>", "Framework to use")
+    .option("-b, --branch <branch>", "Template evolution branch to use")
+    .option("-i, --include <modules>", "Comma-separated modules to merge")
+    .option("-d, --directory <dir>", "Target directory", ".")
+    .option("--module-repo <repo>", "Remote repo for modules")
+    .option("--module-branch <branch>", "Branch for remote modules");
+
+  program.parse(process.argv);
+  const options = program.opts();
+
+  main(options).catch(err => {
+    console.error("Error:", err);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  copyModules,
+  fetchModuleFromRepo,
+  main,
+};
