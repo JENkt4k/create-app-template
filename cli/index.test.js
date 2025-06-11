@@ -57,20 +57,11 @@ describe('CLI integration', () => {
   let tempDir;
 
   beforeAll(() => {
-    // tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cli-integration-'));
     tempDir = path.join(__dirname, '..', 'temp');
-    // Prepare a dummy module in the modules dir for this test
-    const modulesDir = path.join(__dirname, '..', 'modules');
-    const dummyModuleDir = path.join(modulesDir, 'auth-oauth');
-    fs.ensureDirSync(dummyModuleDir);
-    fs.writeFileSync(path.join(dummyModuleDir, 'file.txt'), 'integration');
   });
 
   afterAll(() => {
     fs.removeSync(tempDir);
-    // Optionally clean up the dummy module
-    const modulesDir = path.join(__dirname, '..', 'modules');
-    fs.removeSync(path.join(modulesDir, 'auth-oauth'));
   });
 
   it('should scaffold a project and include a module', () => {
@@ -81,21 +72,15 @@ describe('CLI integration', () => {
     const cmd = `node "${cliPath}" --framework ${framework} --branch ${branch} --include ${module} --directory "${tempDir}"`;
 
     console.log('cliPath:', cliPath);
-    console.log('framework:', framework);
-    console.log('branch:', branch);
-    console.log('module:', module);
     console.log('tempDir:', tempDir);
     console.log('cmd:', cmd);
 
     const output = execSync(cmd, { encoding: 'utf8' });
-
 
     expect(output).toMatch(/Cloning/);
     expect(output).toMatch(/Including module/);
     // Check for a real file from the module
     const filePath = path.join(tempDir, 'modules', 'auth-oauth', 'package.json'); 
     expect(fs.existsSync(filePath)).toBe(true);
-    //expect(fs.existsSync(path.join(tempDir, 'package.json'))).toBe(true);
-    // expect(fs.readFileSync(path.join(tempDir, 'file.txt'), 'utf8')).toBe('integration');
   });
 });
