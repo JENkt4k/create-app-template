@@ -1,0 +1,17 @@
+{
+  "name": "@launchpad/auth-oauth",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/passportStrategies.ts",
+  "types": "types/auth.types.ts",
+  "dependencies": {
+    "passport": "^0.6.0",
+    "passport-linkedin-oauth2": "^2.0.0",
+    "passport-twitter": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/passport": "^1.0.16",
+    "@types/passport-linkedin-oauth2": "^1.5.3",
+    "@types/passport-twitter": "^1.0.40"
+  }
+}

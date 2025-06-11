@@ -7,16 +7,13 @@ const path = require("path");
 const fs = require("fs-extra");
 const templates = require("../templates.json");
 
-async function copyModules(modules, targetDir) {
-  const moduleDir = path.join(__dirname, "..", "modules");
-  
+async function copyModules(modules, targetDir, moduleDir = path.join(__dirname, "..", "modules")) {
   for (const mod of modules) {
     const sourcePath = path.join(moduleDir, mod.trim());
     if (!fs.existsSync(sourcePath)) {
       console.warn(`⚠️  Module not found: ${mod}`);
       continue;
     }
-    
     console.log(`📂 Including module: ${mod}`);
     await fs.copy(sourcePath, targetDir, {
       overwrite: true,

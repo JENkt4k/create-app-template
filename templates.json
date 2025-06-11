@@ -1,12 +1,7 @@
 {
   "react": {
-    "repo": "github.com/yourusername/launchpad-react-template",
-    "branches": ["hello-world", "auth-oauth", "full-dashboard"],
-    "modules": ["auth", "generators"]
-  },
-  "angular": {
-    "repo": "github.com/yourusername/launchpad-angular-template",
-    "branches": ["starter", "auth", "layout"],
-    "modules": ["auth", "theme"]
+    "repo": "JENkt4k/launchpad-react-template",
+    "branches": ["auth-oauth"],
+    "modules": ["auth-oauth"]
   }
 }
