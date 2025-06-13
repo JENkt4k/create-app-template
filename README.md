@@ -4,14 +4,33 @@ A CLI tool to scaffold applications from templates with optional modular feature
 
 ## Quick Start
 
+### Development Setup (Current)
 ```bash
-# Create and enter working directory
-mkdir my-new-app
-cd my-new-app
+# Clone the repository
+git clone https://github.com/JENkt4k/create-app-template.git
 
-# Install the CLI tool
-npx create-app-template@latest --framework react --branch hello-world --directory .
+# Install dependencies
+cd create-app-template
+npm install
+
+# Link for local development
+npm link
+
+# Now you can run from anywhere
+create-app-template --framework react --branch hello-world --directory my-app
 ```
+
+### Future Usage (After npm publish)
+```bash
+# This will work after the package is published to npm
+npx create-app-template@latest --framework react --branch hello-world --directory my-app
+```
+
+## Note on Current Status
+- Package is not yet published to npm
+- Currently requires local setup
+- Will support `npx` usage after first npm publish
+- Track issue #X for npm publish status
 
 ## Detailed Workflow
 
@@ -90,3 +109,31 @@ This directory contains reusable feature modules for `create-app-template`.
 - Modules can be copied locally or fetched from a remote repo/branch.
 - To add a new module, create a subdirectory here.
 - To fetch the latest version, use the CLI with `--include` and configure the remote repo/branch as needed.
+
+## Usage Patterns
+
+### 1. Create New Project with Modules
+```bash
+npx create-app-template@latest \
+  --framework react \
+  --branch hello-world \
+  --include auth-oauth \
+  --module-branch auth-oauth \
+  --directory my-new-app
+```
+
+### 2. Add Module to Existing Project
+```bash
+# From your project directory:
+npx create-app-template@latest \
+  --framework react \
+  --include auth-oauth \
+  --module-branch auth-oauth \
+  --directory .
+```
+
+The CLI will:
+1. Skip template clone if no --branch is specified
+2. Fetch and add only the requested modules
+3. Preserve existing files
+4. Place modules in the `modules` directory
