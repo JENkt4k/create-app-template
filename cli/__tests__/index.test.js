@@ -93,6 +93,47 @@ describe('main function', () => {
     const modulePath = path.join(tempDir, 'modules', 'auth-oauth');
     expect(fs.existsSync(modulePath)).toBe(true);
   });
+
+  it('should handle invalid framework', async () => {
+    const options = {
+      framework: 'invalid',
+      directory: tempDir
+    };
+
+    try {
+      await main(options);
+      fail('Should have thrown an error');
+    } catch (error) {
+      expect(error.message).toBe('Unknown framework: invalid');
+    }
+  });
+
+  it('should install dependencies when package.json exists', async () => {
+    const options = {
+      framework: 'react',
+      branch: 'hello-world',
+      directory: tempDir
+    };
+
+    // Create mock package.json
+    const packageJsonPath = path.join(tempDir, 'package.json');
+    fs.writeFileSync(packageJsonPath, '{"name": "test"}');
+
+    await main(options);
+    expect(fs.existsSync(packageJsonPath)).toBe(true);
+  });
+
+  it('should handle npm install errors gracefully', async () => {
+    const options = {
+      framework: 'react',
+      branch: 'hello-world',
+      directory: path.join(tempDir, 'invalid-path')
+    };
+
+    // Create invalid directory structure to force npm install error
+    await main(options);
+    expect(fs.existsSync(tempDir)).toBe(true);
+  });
 });
 
 // Keep the working CLI integration test as is

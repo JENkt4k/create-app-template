@@ -32,25 +32,32 @@ async function fetchModuleFromRepo(repo, moduleName, branch, localModulesDir) {
 }
 
 async function main(options) {
-  debugger;
-  const fw = templates[options.framework];
-  if (!fw) {
-    console.error("Unknown framework: " + options.framework);
-    process.exit(1);
+  const { framework, branch, include, moduleBranch, directory } = options;
+  const frameworks = {
+    react: {
+      repo: 'JENkt4k/launchpad-react-template',
+      defaultBranch: 'main'
+    }
+    // Add more frameworks as needed
+  };
+
+  const frameworkConfig = frameworks[framework];
+  if (!frameworkConfig) {
+    throw new Error(`Unknown framework: ${framework}`);
   }
 
   // Base repo for template
-  const repo = fw.repo + (options.branch ? "#" + options.branch : "");
+  const repo = frameworkConfig.repo + (branch ? "#" + branch : "");
   const emitter = degit(repo, { cache: false, force: true });
-  const outDir = path.resolve(process.cwd(), options.directory);
+  const outDir = path.resolve(process.cwd(), directory);
 
   console.log(`📦 Cloning ${repo} into ${outDir}`);
   await emitter.clone(outDir);
 
-  if (options.include) {
-    const modules = options.include.split(",");
+  if (include) {
+    const modules = include.split(",");
     // Use either specified module repo or fall back to template repo
-    const moduleRepo = options.moduleRepo || fw.repo;
+    const moduleRepo = options.moduleRepo || frameworkConfig.repo;
     
     for (const mod of modules) {
       const destPath = path.join(outDir, 'modules', mod.trim());
@@ -58,7 +65,7 @@ async function main(options) {
       await fetchModuleFromRepo(
         moduleRepo,
         mod.trim(), 
-        options.moduleBranch || mod.trim(),  // Use specified branch or module name as branch
+        moduleBranch || mod.trim(),  // Use specified branch or module name as branch
         path.join(outDir, 'modules')
       );
     }
