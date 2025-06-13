@@ -1,5 +1,7 @@
 # Create App Template
 
+![CI](https://github.com/JENkt4k/create-app-template/workflows/CI/badge.svg)
+
 A CLI tool to scaffold applications from templates with optional modular features.
 
 ## Quick Start
