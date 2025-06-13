@@ -1,0 +1,10 @@
+{
+  "jest.jestCommandLine": "npm test --",
+  "jest.autoRun": {
+    "watch": true,
+    "onSave": "test-src-file"
+  },
+  "jest.testExplorer": {
+    "enabled": true
+  }
+}
