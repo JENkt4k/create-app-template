@@ -1,10 +1,10 @@
 // Mock console methods to reduce noise in test output
-global.console = {
-  ...console,
-  log: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn()
-};
+// global.console = {
+//   ...console,
+//   log: jest.fn(),
+//   error: jest.fn(),
+//   warn: jest.fn()
+// };
 
 // Add longer timeout for all tests
 jest.setTimeout(5000);
